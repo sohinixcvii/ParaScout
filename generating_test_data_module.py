@@ -25,6 +25,3 @@ for n in range(1, 6):
 # store only first 5 row of data for each dimension and delete the rest to save space
 for n in range(1, 6):
     all_data[f"{n}D"] = (all_data[f"{n}D"][0], [col[:5] for col in all_data[f"{n}D"][1]])
-
-
-# print(all_data)

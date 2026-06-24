@@ -1,7 +1,19 @@
 from itertools import combinations
 
 import numpy as np
-from generating_test_data_module import all_data  # it will be replacing output of load_data function.
+from generating_test_data_module import (
+    all_data,  # it will be replacing output of load_data function.
+)
+
+dim = "3D"
+all_data = {dim: all_data[dim]}  # Keep only the data for the specified dimension for testing purposes.
+
+# TODO: add a function to create dictionary with a label of dimension regardless of what type of data comes as a input. For example, if the input is a dictionary with keys "1D", "2D", "3D", etc., the function should return a new dictionary with the same keys and values. If the input is a list of tuples, the function should return a dictionary with keys "1D", "2D", "3D", etc., and values as lists of tuples. If the input is a single tuple, the function should return a dictionary with key "1D" and value as a list containing that tuple.
+
+
+for n in range(1, 6):
+    if f"{n}D" in all_data:
+        print(f"The file has {n}D data with labels: {all_data[f'{n}D'][0]}")
 
 
 def make_column_combinations(labels, columns, max_dimension=3):
