@@ -25,9 +25,7 @@ Installation
 
 Install directly from the repository using ``pip``::
 
-    git clone https://github.com/sohinixcvii/ParaScout.git
-    cd ParaScout
-    pip install .
+    pip install parascout
 
 **Runtime dependencies** (installed automatically):
 

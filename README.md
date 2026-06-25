@@ -17,9 +17,7 @@ ParaScout aims to provide a lightweight framework for:
 ## Installation
 
 ```bash
-git clone https://github.com/sohinixcvii/ParaScout.git
-cd ParaScout
-pip install -e .
+pip install parascout
 ```
 
 ### Dependencies
