@@ -25,8 +25,8 @@ Installation
 
 Install directly from the repository using ``pip``::
 
-    git clone https://github.com/sohinixcvii/visualiser.git
-    cd visualiser
+    git clone https://github.com/sohinixcvii/ParaScout.git
+    cd ParaScout
     pip install .
 
 **Runtime dependencies** (installed automatically):

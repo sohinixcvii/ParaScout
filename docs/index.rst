@@ -17,3 +17,4 @@ array's shape.
    :caption: Contents:
 
    api
+   CHANGELOG
