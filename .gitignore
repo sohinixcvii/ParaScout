@@ -6,7 +6,6 @@ __pycache__/
 *.so
 *.egg
 *.egg-info/
-dist/
 build/
 .eggs/
 
@@ -34,4 +33,3 @@ Thumbs.db
 # IDE / tools
 .vscode/
 .idea/
-.claude/
