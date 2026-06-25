@@ -12,6 +12,115 @@ ParaScout aims to provide a lightweight framework for:
 * Exploring parameter-space coverage through 1D, 2D, and 3D projections
 * Providing the foundations for future gap-finding and coverage metrics
 
+---
+
+## Installation
+
+```bash
+git clone https://github.com/sohinixcvii/visualiser.git
+cd visualiser
+pip install -e .
+```
+
+### Dependencies
+
+* `numpy` — array handling
+* `plotly` — interactive visualisations
+* `scipy` — Gaussian KDE for density estimation
+
+---
+
+## Quick Start
+
+```python
+import numpy as np
+from parascout import visualise
+
+# Each array in the list is one parameter-space projection
+rng = np.random.default_rng(0)
+data = rng.random((100, 3))          # (N, 3): x, y, size
+
+figs = visualise([data, data], labels=("x", "y", "z"))
+figs[0].show()
+```
+
+---
+
+## Package Structure
+
+```text
+visualiser/
+├── parascout/                    # Installable Python package
+│   ├── __init__.py               # Public API and visualise() wrapper
+│   ├── dispatcher.py             # Routes arrays to plotting functions
+│   └── plotting_functions.py     # plot_bubble_map, plot_volumetric_density
+├── data/                         # Place input data files here
+├── dev_tests/                    # Developer notebooks
+├── test_data_multi_dimension/    # Sample 1D–5D test datasets
+├── pyproject.toml                # Build configuration and metadata
+└── README.md
+```
+
+---
+
+## Public API
+
+### `visualise(data_list, labels=None)`
+
+Top-level entry point. Accepts a list of NumPy arrays and dispatches each to
+the appropriate plotting function based on its shape.
+
+```python
+from parascout import visualise
+
+figs = visualise(data_list, labels=("param_a", "param_b", "param_c"))
+```
+
+| Array shape | Routed to |
+| ----------- | --------- |
+| 1-D or (N, 1) | `plot_1d` *(planned)* |
+| (N, 2) | `plot_2d` *(planned)* |
+| (N, 3+) | `plot_bubble_map` |
+
+`data_list` must contain between 2 and 5 arrays.
+
+---
+
+### `plot_bubble_map(params, labels=("x", "y", "size"), ...)`
+
+Create a 2D bubble map from an (N, 3) parameter array. Bubble position is set
+by the first two columns; bubble size is proportional to the third column.
+
+```python
+from parascout import plot_bubble_map
+
+fig = plot_bubble_map(params, labels=("alpha", "beta", "gamma"))
+fig.show()
+```
+
+---
+
+### `plot_volumetric_density(params, labels=("x", "y", "z"), ...)`
+
+Create an interactive 3D volumetric density field from an (N, 3) parameter
+array using Gaussian KDE.
+
+```python
+from parascout import plot_volumetric_density
+
+fig = plot_volumetric_density(params, labels=("T", "rho", "Z"))
+fig.show()
+```
+
+---
+
+### `plot_dispatcher(data_list, labels=None)`
+
+Low-level dispatcher called internally by `visualise()`. Can be used directly
+if finer control is needed.
+
+---
+
 ## Project Workflow
 
 The current development plan consists of four stages.
@@ -37,15 +146,12 @@ Supported file formats:
 
 Once the data are loaded, ParaScout determines the dimensionality of the parameter space.
 
-Examples:
-
 | Number of Parameters | Action                                                                    |
 | -------------------- | ------------------------------------------------------------------------- |
 | 1                    | Create 1D visualisations                                                  |
 | 2                    | Create 2D visualisations                                                  |
 | 3                    | Create 3D visualisations                                                  |
 | >3                   | Create sets of parameter combinations containing at most three parameters |
-
 
 ### 3. Plot Selection
 
@@ -59,7 +165,7 @@ Possible plot types include:
 
 #### 2D
 
-* Joint Scatter plots
+* Joint scatter plots
 * Hexbin plots
 
 #### 3D
@@ -107,13 +213,13 @@ These labels will be used automatically for axis titles and plot annotations.
 All input files should be placed inside the `data/` directory:
 
 ```text
-ParaScout/
+visualiser/
 ├── data/
 │   ├── runs.csv
 │   ├── simulations.txt
 │   └── parameter_space.h5
-├── src/
-├── plots/
+├── parascout/
+├── dev_tests/
 └── README.md
 ```
 

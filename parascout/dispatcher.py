@@ -1,6 +1,6 @@
 import numpy as np
 
-from plotting_functions import plot_bubble_map
+from .plotting_functions import plot_bubble_map
 
 # plot_1d and plot_2d are expected to be defined in plotting_functions
 # and imported here once available.

@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Distribution / packaging
+*.tar.gz
+*.whl
+MANIFEST
+
+# Generated outputs
+*.html
+plots/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE / tools
+.vscode/
+.idea/
+.claude/
