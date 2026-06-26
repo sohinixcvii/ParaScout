@@ -6,6 +6,46 @@ The format follows `Keep a Changelog <https://keepachangelog.com/en/1.1.0/>`_.
 
 ----
 
+0.1.1 — 2026-06-26
+-------------------
+
+1-D and 2-D plotting functions implemented; utility scripts reorganised.
+
+Added
+~~~~~
+
+- :func:`~parascout.plot_1d` — interactive 1-D distribution plot
+  (``plotly.graph_objects.Histogram`` + ``go.Scatter`` KDE overlay) for
+  1-D or ``(N, 1)`` parameter arrays. A Gaussian KDE curve scaled to match
+  histogram area is overlaid by default; it can be disabled via
+  ``use_kde=False``.
+- :func:`~parascout.plot_2d` — interactive 2-D scatter plot
+  (``plotly.graph_objects.Scatter``) for ``(N, 2)`` parameter arrays.
+  Points are coloured by their y-value using a configurable Plotly
+  colorscale.
+- ``scripts/`` directory containing ``combinations.py`` and
+  ``generating_test_data_module.py``, preserved for reference.
+
+Changed
+~~~~~~~
+
+- :func:`~parascout.plot_dispatcher` now routes 1-D / ``(N, 1)`` arrays to
+  :func:`~parascout.plot_1d` and ``(N, 2)`` arrays to
+  :func:`~parascout.plot_2d`. Previously these shapes raised a
+  ``NameError``; all shapes in the 1–3+ column range are now handled.
+- ``__init__.py`` updated to export :func:`~parascout.plot_1d` and
+  :func:`~parascout.plot_2d` as part of the public API.
+- ``combinations.py`` and ``generating_test_data_module.py`` moved from the
+  repository root into the new ``scripts/`` directory.
+
+Removed
+~~~~~~~
+
+- ``plotting1D2D.py`` — legacy ``matplotlib``/``seaborn`` prototype for 1-D
+  and 2-D plots, superseded by the new Plotly implementations above.
+
+----
+
 0.1.0 — 2026-06-25
 -------------------
 
@@ -135,10 +175,6 @@ The items below are planned but not yet implemented.
 Planned
 ~~~~~~~
 
-- ``plot_1d`` — histogram / rug plot for 1-D or ``(N, 1)`` parameter arrays.
-- ``plot_2d`` — scatter plot or heatmap for ``(N, 2)`` parameter arrays.
-  Once available, the dispatcher will route 1-D and 2-D arrays to these
-  functions rather than raising a ``NameError``.
 - Coverage metrics — quantitative gap-finding scores to complement the visual
   outputs.
 - ``pytest`` test suite exercising the public API against the existing test

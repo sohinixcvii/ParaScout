@@ -47,13 +47,13 @@ figs[0].show()
 ## Package Structure
 
 ```text
-visualiser/
+parascout/
 ├── parascout/                    # Installable Python package
 │   ├── __init__.py               # Public API and visualise() wrapper
 │   ├── dispatcher.py             # Routes arrays to plotting functions
-│   └── plotting_functions.py     # plot_bubble_map, plot_volumetric_density
+│   └── plotting_functions.py     # plot_1d, plot_2d, plot_bubble_map, plot_volumetric_density
+├── scripts/                      # Utility scripts (reference only)
 ├── data/                         # Place input data files here
-├── dev_tests/                    # Developer notebooks
 ├── test_data_multi_dimension/    # Sample 1D–5D test datasets
 ├── pyproject.toml                # Build configuration and metadata
 └── README.md
@@ -76,11 +76,39 @@ figs = visualise(data_list, labels=("param_a", "param_b", "param_c"))
 
 | Array shape | Routed to |
 | ----------- | --------- |
-| 1-D or (N, 1) | `plot_1d` *(planned)* |
-| (N, 2) | `plot_2d` *(planned)* |
+| 1-D or (N, 1) | `plot_1d` |
+| (N, 2) | `plot_2d` |
 | (N, 3+) | `plot_bubble_map` |
 
 `data_list` must contain between 2 and 5 arrays.
+
+---
+
+### `plot_1d(params, labels=("x",), use_kde=True, ...)`
+
+Create a 1-D distribution plot from a 1-D or (N, 1) parameter array. Renders
+a histogram with an optional Gaussian KDE curve scaled to match histogram area.
+
+```python
+from parascout import plot_1d
+
+fig = plot_1d(params, labels=("temperature",))
+fig.show()
+```
+
+---
+
+### `plot_2d(params, labels=("x", "y"), ...)`
+
+Create a 2-D scatter plot from an (N, 2) parameter array. Points are coloured
+by their y-value using a configurable Plotly colorscale.
+
+```python
+from parascout import plot_2d
+
+fig = plot_2d(params, labels=("alpha", "beta"))
+fig.show()
+```
 
 ---
 

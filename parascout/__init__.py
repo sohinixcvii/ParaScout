@@ -13,6 +13,12 @@ visualise(data_list, labels=None)
 plot_dispatcher(data_list, labels=None)
     Low-level dispatcher that routes arrays by dimensionality.
 
+plot_1d(params, labels=..., ...)
+    1-D histogram / KDE distribution plot for 1-D parameter arrays.
+
+plot_2d(params, labels=..., ...)
+    2-D scatter plot for (N, 2) parameter arrays.
+
 plot_bubble_map(params, labels=..., ...)
     2-D bubble map for (N, 3) parameter arrays.
 
@@ -20,7 +26,12 @@ plot_volumetric_density(params, labels=..., ...)
     3-D volumetric density plot for (N, 3) parameter arrays.
 """
 
-from .plotting_functions import plot_bubble_map, plot_volumetric_density
+from .plotting_functions import (
+    plot_1d,
+    plot_2d,
+    plot_bubble_map,
+    plot_volumetric_density,
+)
 from .dispatcher import plot_dispatcher
 
 
@@ -35,8 +46,8 @@ def visualise(data_list, labels=None):
 
     Routing rules
     -------------
-    - 1-D array or (N, 1)  → plot_1d   (planned, not yet implemented)
-    - (N, 2)               → plot_2d   (planned, not yet implemented)
+    - 1-D array or (N, 1)  → plot_1d
+    - (N, 2)               → plot_2d
     - (N, 3+)              → plot_bubble_map
 
     Parameters
@@ -68,6 +79,8 @@ def visualise(data_list, labels=None):
 __all__ = [
     "visualise",
     "plot_dispatcher",
+    "plot_1d",
+    "plot_2d",
     "plot_bubble_map",
     "plot_volumetric_density",
 ]

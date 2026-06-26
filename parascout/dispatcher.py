@@ -1,38 +1,39 @@
 import numpy as np
 
-from .plotting_functions import plot_bubble_map
-
-# plot_1d and plot_2d are expected to be defined in plotting_functions
-# and imported here once available.
+from .plotting_functions import plot_bubble_map, plot_1d, plot_2d
 
 
 def plot_dispatcher(data_list, labels=None):
     """
-    Route each array returned by decider() to the appropriate plotting
-    function based on its dimensionality.
+    Route each array in data_list to the appropriate plotting function based
+    on its dimensionality.
 
     Parameters
     ----------
     data_list : list of ndarray
-        Output of decider(). Each element is one dataset to plot.
-        Routing logic (applied when len(data_list) > 1):
+        Each element is one dataset to plot. Must contain between 2 and 5
+        arrays (inclusive). Routing logic:
             - 1-D array  or  (N, 1)  → plot_1d
             - (N, 2)                  → plot_2d
             - (N, 3+)                 → plot_bubble_map
+
+    labels : list of str, optional
+        Axis labels forwarded to the individual plotting functions.
 
     Returns
     -------
     figs : list of plotly.graph_objects.Figure
         One figure per array in data_list, in the same order.
     """
-    if len(data_list) <= 1:
+    if len(data_list) < 2:
         raise ValueError(
-            "data_list must contain more than one array. "
-            "decider() returned fewer entries than expected."
+            "data_list must contain at least 2 arrays. "
+            "Pass a list of 2–5 parameter arrays."
         )
-    elif len(data_list) >5:
+    if len(data_list) > 5:
         raise ValueError(
-            "data_list contains too many parameters. "
+            "data_list contains too many arrays. "
+            "Pass a list of 2–5 parameter arrays."
         )
 
     figs = []
@@ -41,13 +42,13 @@ def plot_dispatcher(data_list, labels=None):
         arr = np.asarray(arr)
 
         if arr.ndim == 1 or (arr.ndim == 2 and arr.shape[1] == 1):
-            fig = plot_1d(arr, labels)
+            fig = plot_1d(arr, labels=labels)
 
         elif arr.ndim == 2 and arr.shape[1] == 2:
-            fig = plot_2d(arr, labels)
+            fig = plot_2d(arr, labels=labels)
 
         elif arr.ndim == 2 and arr.shape[1] >= 3:
-            fig = plot_bubble_map(arr, labels)
+            fig = plot_bubble_map(arr, labels=labels)
 
         else:
             raise ValueError(

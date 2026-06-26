@@ -16,8 +16,8 @@ samples in some projection of the full parameter space — ParaScout dispatches
 each array to an appropriate interactive `Plotly <https://plotly.com/python/>`_
 visualisation and returns the figures for inspection or export.
 
-The library currently targets parameter-space projections of two or three
-dimensions, with one- and two-dimensional plots planned for a future release.
+The library supports parameter-space projections of one, two, and three
+dimensions.
 
 
 Installation
@@ -69,11 +69,11 @@ Input Data Format
 -----------------
 
 Each array passed to :func:`visualise` or :func:`plot_dispatcher` must be a
-2-D ``numpy.ndarray`` of shape ``(N, D)``, where:
+NumPy array, where:
 
 * ``N`` — number of simulation samples (rows).
-* ``D`` — number of parameters in the projection (columns); currently 3 is
-  the supported value for the implemented plots.
+* ``D`` — number of parameters in the projection (columns); values of 1, 2,
+  and 3+ are all supported.
 
 Rows containing ``NaN`` or infinite values are silently dropped before
 plotting.
@@ -103,11 +103,11 @@ and select a plotting function automatically:
      - Function called
      - Status
    * - 1-D or ``(N, 1)``
-     - ``plot_1d``
-     - Planned — not yet implemented
+     - :func:`plot_1d`
+     - Available
    * - ``(N, 2)``
-     - ``plot_2d``
-     - Planned — not yet implemented
+     - :func:`plot_2d`
+     - Available
    * - ``(N, 3)`` or wider
      - :func:`plot_bubble_map`
      - Available
@@ -187,6 +187,143 @@ internally by :func:`visualise`; use it directly when you want finer control
 without the :func:`visualise` wrapper.
 
 **Parameters** and **Returns** are identical to :func:`visualise`.
+
+
+----
+
+plot_1d
+~~~~~~~
+
+.. code-block:: python
+
+    parascout.plot_1d(
+        params,
+        labels=("x",),
+        use_kde=True,
+        padding_fraction=0.05,
+    )
+
+Create a 1-D distribution plot from a 1-D or ``(N, 1)`` parameter array.
+Renders a ``go.Histogram`` trace; when ``use_kde=True`` (the default), a
+Gaussian KDE curve (``go.Scatter``) scaled to match histogram area is
+overlaid using ``scipy.stats.gaussian_kde``.
+
+**Parameters**
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 20 58
+
+   * - Name
+     - Type / Default
+     - Description
+   * - ``params``
+     - ``ndarray (N,) or (N, 1)``
+     - Single-parameter array. Non-finite values are dropped automatically.
+   * - ``labels``
+     - ``tuple[str]``
+       ``("x",)``
+     - Label for the x-axis. Only the first element is used.
+   * - ``use_kde``
+     - ``bool``
+       ``True``
+     - If ``True``, overlay a Gaussian KDE curve scaled to histogram area.
+   * - ``padding_fraction``
+     - ``float``
+       ``0.05``
+     - Fractional whitespace added to the x-axis limits when KDE is enabled.
+
+**Returns**
+
+``plotly.graph_objects.Figure`` — interactive figure containing a
+``go.Histogram`` trace and, optionally, a ``go.Scatter`` KDE trace.
+
+**Example**
+
+.. code-block:: python
+
+    import numpy as np
+    from parascout import plot_1d
+
+    rng = np.random.default_rng(0)
+    data = rng.normal(loc=0.5, scale=0.15, size=300)
+
+    fig = plot_1d(data, labels=("Temperature",))
+    fig.show()
+
+
+----
+
+plot_2d
+~~~~~~~
+
+.. code-block:: python
+
+    parascout.plot_2d(
+        params,
+        labels=("x", "y"),
+        opacity=0.7,
+        colorscale="Viridis",
+        padding_fraction=0.05,
+    )
+
+Create a 2-D scatter plot from an ``(N, 2)`` parameter array.
+Points are rendered as a ``go.Scatter`` trace and coloured by their
+y-value using a configurable Plotly colorscale.
+
+**Parameters**
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 20 58
+
+   * - Name
+     - Type / Default
+     - Description
+   * - ``params``
+     - ``ndarray (N, 2)``
+     - Two-parameter array. Column 0 → x axis, column 1 → y axis.
+       Rows with non-finite values in the first two columns are dropped.
+   * - ``labels``
+     - ``tuple[str, str]``
+       ``("x", "y")``
+     - Labels for the x- and y-axes. Also used as the colorbar title.
+   * - ``opacity``
+     - ``float``
+       ``0.7``
+     - Opacity of scatter markers (0 = transparent, 1 = opaque).
+   * - ``colorscale``
+     - ``str``
+       ``"Viridis"``
+     - Any named `Plotly colorscale <https://plotly.com/python/builtin-colorscales/>`_,
+       e.g. ``"Plasma"``, ``"Cividis"``.
+   * - ``padding_fraction``
+     - ``float``
+       ``0.05``
+     - Fractional whitespace added to each axis limit.
+
+**Returns**
+
+``plotly.graph_objects.Figure`` — interactive 2-D scatter plot with a
+``go.Scatter`` trace coloured by y-value.
+
+**Raises**
+
+* ``ValueError`` — if ``params`` is not 2-D.
+* ``ValueError`` — if ``params`` has fewer than 2 columns.
+
+**Example**
+
+.. code-block:: python
+
+    import numpy as np
+    from parascout import plot_2d
+
+    rng = np.random.default_rng(1)
+    data = rng.random((200, 2))
+
+    fig = plot_2d(data, labels=("alpha", "beta"), colorscale="Plasma")
+    fig.show()
 
 
 ----
@@ -388,10 +525,6 @@ Development Roadmap
 
 The following features are planned for future releases:
 
-* **1-D histogram** (``plot_1d``) — frequency distribution for single-column
-  projections.
-* **2-D scatter / heatmap** (``plot_2d``) — coverage view for two-column
-  projections.
 * **Coverage metrics** — quantitative gap-finding and coverage scores to
   complement the visual outputs.
 * **Test suite** — ``pytest``-based unit and integration tests.
