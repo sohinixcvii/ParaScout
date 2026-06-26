@@ -53,7 +53,6 @@ parascout/
 │   ├── dispatcher.py             # Routes arrays to plotting functions
 │   └── plotting_functions.py     # plot_1d, plot_2d, plot_bubble_map, plot_volumetric_density
 ├── scripts/                      # Utility scripts (reference only)
-├── data/                         # Place input data files here
 ├── test_data_multi_dimension/    # Sample 1D–5D test datasets
 ├── pyproject.toml                # Build configuration and metadata
 └── README.md
@@ -147,109 +146,34 @@ if finer control is needed.
 
 ---
 
-## Project Workflow
+## Loading Data
 
-The current development plan consists of four stages.
+ParaScout does not auto-scan directories. Load your data with NumPy and pass it directly to the plotting functions.
 
-### 1. Data Discovery and Loading
+Text files with a header row of column labels can be loaded like this:
 
-ParaScout scans the `data/` directory and automatically identifies supported data files.
+```python
+import numpy as np
 
-Tasks:
+def load_labelled_txt(path):
+    with open(path) as f:
+        labels = f.readline().split()
+    data = np.loadtxt(path, skiprows=1)
+    return labels, data
 
-* Search the `data/` directory
-* Identify file type
-* Load supported file formats
-* Extract parameter labels
-* Store parameter values in a standard internal format
-
-Supported file formats:
-
-* Text files (`.txt`, `.csv`, `.dat`)
-* HDF5 files (`.h5`, `.hdf5`)
-
-### 2. Parameter-Space Analysis
-
-Once the data are loaded, ParaScout determines the dimensionality of the parameter space.
-
-| Number of Parameters | Action                                                                    |
-| -------------------- | ------------------------------------------------------------------------- |
-| 1                    | Create 1D visualisations                                                  |
-| 2                    | Create 2D visualisations                                                  |
-| 3                    | Create 3D visualisations                                                  |
-| >3                   | Create sets of parameter combinations containing at most three parameters |
-
-### 3. Plot Selection
-
-ParaScout automatically determines which visualisation methods are appropriate for the dimensionality of the data.
-
-Possible plot types include:
-
-#### 1D
-
-* Kernel density estimates
-
-#### 2D
-
-* Joint scatter plots
-* Hexbin plots
-
-#### 3D
-
-* Volumetric density fields
-* Bubble maps
-* Interactive parameter-space visualisations
-
-### 4. Plot Generation
-
-The plotting module generates visualisations using the selected plotting strategy.
-
-Responsibilities include:
-
-* Axis labelling
-* Parameter scaling
-* Density estimation
-* Interactive visualisation generation
-* Figure export
-
-Generated plots are saved to the output directory and may also be displayed interactively.
+labels, data = load_labelled_txt("my_simulations.txt")
+```
 
 ---
 
-## User Instructions
+## Roadmap
 
-### Supported File Types
+Planned features for future releases:
 
-Input files must be one of the following formats:
-
-* `.txt`
-* `.csv`
-* `.dat`
-* `.h5`
-* `.hdf5`
-
-### Parameter Labels
-
-The first row of the input file must contain parameter labels.
-
-These labels will be used automatically for axis titles and plot annotations.
-
-### Data Location
-
-All input files should be placed inside the `data/` directory:
-
-```text
-visualiser/
-├── data/
-│   ├── runs.csv
-│   ├── simulations.txt
-│   └── parameter_space.h5
-├── parascout/
-├── dev_tests/
-└── README.md
-```
-
-ParaScout will automatically scan the directory and identify compatible files.
+* Automatic data discovery and loading from a `data/` directory
+* HDF5 file support (`.h5`, `.hdf5`)
+* Coverage metrics and quantitative gap-finding algorithms
+* `pytest`-based test suite
 
 ---
 
