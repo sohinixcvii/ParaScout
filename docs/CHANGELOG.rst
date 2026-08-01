@@ -4,6 +4,32 @@ Changelog
 All notable changes to ParaScout are documented here.
 The format follows `Keep a Changelog <https://keepachangelog.com/en/1.1.0/>`_.
 
+0.2.0 — 2026-08-01
+-------------------
+
+Robustness improvements to 1-D plotting; README and scripts restructured.
+
+Fixed
+~~~~~
+
+- :func:`~parascout.plot_1d` now raises ``ValueError`` when no finite
+  values remain after filtering ``NaN`` and ``Inf``. Previously, passing
+  an all-``NaN`` array would silently produce a blank figure with a broken
+  KDE step.
+- :func:`~parascout.plot_1d` no longer attempts KDE when fewer than two
+  finite samples remain after filtering, or when all values are identical.
+  Both cases previously caused ``scipy.stats.gaussian_kde`` to raise a
+  ``numpy.linalg.LinAlgError``.
+
+Changed
+~~~~~~~
+
+- ``README.md`` restructured: the detailed project-workflow and
+  user-instructions sections were removed; a concise *Loading Data* section
+  was added with a minimal NumPy helper.
+- ``scripts/combinations.py`` adjusted to use the test-data module directly
+  and refactored for clarity.
+
 ----
 
 0.1.1 — 2026-06-26

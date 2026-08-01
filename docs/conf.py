@@ -10,7 +10,7 @@ project = 'ParaScout'
 copyright = '2026, Sohini Dutta, Kutay Arinc COKLUK, Julius Chuhwak Matthew, Sethulakshmi Vazhayil'
 author = 'Sohini Dutta, Kutay Arinc COKLUK, Julius Chuhwak Matthew, Sethulakshmi Vazhayil'
 root_doc = 'index'
-release = '0.1.1'
+release = '0.2.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

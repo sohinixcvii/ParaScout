@@ -29,9 +29,23 @@ def plot_1d(
     Returns
     -------
     fig : plotly.graph_objects.Figure
+
+    Raises
+    ------
+    ValueError
+        If ``params`` contains no finite values after filtering NaN and Inf.
+
+    Notes
+    -----
+    When ``use_kde=True``, the KDE overlay is silently skipped if fewer than
+    two finite samples remain after filtering, or if all values are identical.
+    Both cases would otherwise cause ``scipy.stats.gaussian_kde`` to fail.
     """
     params = np.asarray(params, dtype=float).ravel()
     params = params[np.isfinite(params)]
+
+    if len(params) == 0:
+        raise ValueError("No finite values in params after filtering NaN and Inf.")
 
     if labels is None:
         xlabel = "Parameter"
@@ -50,7 +64,7 @@ def plot_1d(
         )
     )
 
-    if use_kde:
+    if use_kde and len(params) >= 2 and params.min() != params.max():
         x_min, x_max = params.min(), params.max()
         width = x_max - x_min if x_max != x_min else 1.0
         pad = padding_fraction * width
@@ -120,6 +134,9 @@ def plot_2d(
         raise ValueError("params must have at least 2 columns")
 
     params = params[np.all(np.isfinite(params[:, :2]), axis=1)]
+
+    if len(params) == 0:
+        raise ValueError("No finite values in params after filtering NaN and Inf.")
 
     x = params[:, 0]
     y = params[:, 1]
@@ -218,9 +235,26 @@ def plot_volumetric_density(
 
     params = params[np.all(np.isfinite(params), axis=1)]
 
+    if len(params) == 0:
+        raise ValueError("No finite values in params after filtering NaN and Inf.")
+
+    n_dims = params.shape[1]
+    if len(params) <= n_dims:
+        raise ValueError(
+            f"plot_volumetric_density requires more than {n_dims} samples for a "
+            f"{n_dims}-dimensional KDE. Got {len(params)}."
+        )
+
     x = params[:, 0]
     y = params[:, 1]
     z = params[:, 2]
+
+    if labels is None:
+        xlabel, ylabel, zlabel = "x", "y", "z"
+    elif isinstance(labels, (list, tuple)) and len(labels) >= 3:
+        xlabel, ylabel, zlabel = str(labels[0]), str(labels[1]), str(labels[2])
+    else:
+        xlabel, ylabel, zlabel = "x", "y", "z"
 
     def compute_limits(arr):
         arr_min = arr.min()
@@ -310,15 +344,15 @@ def plot_volumetric_density(
         ),
         scene=dict(
             xaxis=dict(
-                title=labels[0],
+                title=xlabel,
                 range=list(xlim)
             ),
             yaxis=dict(
-                title=labels[1],
+                title=ylabel,
                 range=list(ylim)
             ),
             zaxis=dict(
-                title=labels[2],
+                title=zlabel,
                 range=list(zlim)
             ),
         )
@@ -378,9 +412,19 @@ def plot_bubble_map(
 
     params = params[np.all(np.isfinite(params[:, :3]), axis=1)]
 
+    if len(params) == 0:
+        raise ValueError("No finite values in params after filtering NaN and Inf.")
+
     x = params[:, 0]
     y = params[:, 1]
     s = params[:, 2]
+
+    if labels is None:
+        xlabel, ylabel, slabel = "x", "y", "size"
+    elif isinstance(labels, (list, tuple)) and len(labels) >= 3:
+        xlabel, ylabel, slabel = str(labels[0]), str(labels[1]), str(labels[2])
+    else:
+        xlabel, ylabel, slabel = "x", "y", "size"
 
     def compute_limits(arr):
         arr_min = arr.min()
@@ -412,7 +456,7 @@ def plot_bubble_map(
                 colorscale=colorscale,
                 opacity=opacity,
                 colorbar=dict(
-                    title=labels[2]
+                    title=slabel
                 ),
                 line=dict(
                     width=0.5,
@@ -427,11 +471,11 @@ def plot_bubble_map(
         title="2D Bubble Map",
         margin=dict(l=60, r=20, b=60, t=60),
         xaxis=dict(
-            title=labels[0],
+            title=xlabel,
             range=list(xlim)
         ),
         yaxis=dict(
-            title=labels[1],
+            title=ylabel,
             range=list(ylim)
         ),
     )

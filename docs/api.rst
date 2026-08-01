@@ -238,6 +238,18 @@ overlaid using ``scipy.stats.gaussian_kde``.
 ``plotly.graph_objects.Figure`` — interactive figure containing a
 ``go.Histogram`` trace and, optionally, a ``go.Scatter`` KDE trace.
 
+**Raises**
+
+* ``ValueError`` — if all values in ``params`` are non-finite (nothing
+  remains after filtering).
+
+.. note::
+
+   When ``use_kde=True``, the KDE trace is silently omitted if fewer than
+   two finite samples remain after filtering, or if all values are identical.
+   Both cases would cause ``scipy.stats.gaussian_kde`` to fail; the
+   histogram is still returned.
+
 **Example**
 
 .. code-block:: python

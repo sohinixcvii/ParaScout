@@ -34,12 +34,13 @@ pip install parascout
 import numpy as np
 from parascout import visualise
 
-# Each array in the list is one parameter-space projection
 rng = np.random.default_rng(0)
-data = rng.random((100, 3))          # (N, 3): x, y, size
+params_2d = rng.random((200, 2))   # (N, 2) → routed to plot_2d
+params_3d = rng.random((200, 3))   # (N, 3) → routed to plot_bubble_map
 
-figs = visualise([data, data], labels=("x", "y", "z"))
-figs[0].show()
+figs = visualise([params_2d, params_3d], labels=("x", "y", "size"))
+figs[0].show()   # 2D scatter
+figs[1].show()   # bubble map
 ```
 
 ---
@@ -47,13 +48,15 @@ figs[0].show()
 ## Package Structure
 
 ```text
-parascout/
+ParaScout/
 ├── parascout/                    # Installable Python package
 │   ├── __init__.py               # Public API and visualise() wrapper
 │   ├── dispatcher.py             # Routes arrays to plotting functions
 │   └── plotting_functions.py     # plot_1d, plot_2d, plot_bubble_map, plot_volumetric_density
 ├── scripts/                      # Utility scripts (reference only)
 ├── test_data_multi_dimension/    # Sample 1D–5D test datasets
+├── docs/                         # Sphinx documentation source
+├── demo_notebook.ipynb           # Worked examples for every API function
 ├── pyproject.toml                # Build configuration and metadata
 └── README.md
 ```
@@ -128,12 +131,17 @@ fig.show()
 ### `plot_volumetric_density(params, labels=("x", "y", "z"), ...)`
 
 Create an interactive 3D volumetric density field from an (N, 3) parameter
-array using Gaussian KDE.
+array using Gaussian KDE. The density volume is overlaid with the raw sample
+points as a 3D scatter.
+
+> **Note:** `visualise()` routes (N, 3+) arrays to `plot_bubble_map`, not
+> `plot_volumetric_density`. Call this function directly when you want the
+> volumetric view.
 
 ```python
 from parascout import plot_volumetric_density
 
-fig = plot_volumetric_density(params, labels=("T", "rho", "Z"))
+fig = plot_volumetric_density(params, labels=("mhalo", "rmfp", "nion"))
 fig.show()
 ```
 
@@ -143,6 +151,95 @@ fig.show()
 
 Low-level dispatcher called internally by `visualise()`. Can be used directly
 if finer control is needed.
+
+---
+
+## Examples
+
+The examples below use synthetic data generated with NumPy. All figures are
+interactive Plotly visualisations; call `.show()` to open them in a browser.
+Parameter names (`mhalo`, `rmfp`, `nion`) mirror the sample datasets in
+`test_data_multi_dimension/`.
+
+### 1D: parameter distribution
+
+```python
+import numpy as np
+from parascout import plot_1d
+
+rng = np.random.default_rng(42)
+mhalo = rng.uniform(100, 500, 400)
+
+fig = plot_1d(mhalo, labels=("mhalo",))
+fig.show()
+```
+
+### 2D: scatter plot
+
+```python
+import numpy as np
+from parascout import plot_2d
+
+rng = np.random.default_rng(42)
+params = rng.uniform(low=[100, 10], high=[500, 200], size=(400, 2))
+
+fig = plot_2d(params, labels=("mhalo", "rmfp"))
+fig.show()
+```
+
+### Bubble map: two-parameter plane with a third encoded dimension
+
+Each bubble's position encodes two parameters; its size and colour encode a
+third. This is the primary view for spotting gaps in 3-parameter projections.
+
+```python
+import numpy as np
+from parascout import plot_bubble_map
+
+rng = np.random.default_rng(42)
+params = rng.uniform(low=[100, 10, 5], high=[500, 200, 50], size=(400, 3))
+
+fig = plot_bubble_map(params, labels=("mhalo", "rmfp", "nion"))
+fig.show()
+```
+
+### Volumetric density: 3D coverage map
+
+```python
+import numpy as np
+from parascout import plot_volumetric_density
+
+rng = np.random.default_rng(42)
+params = rng.uniform(low=[100, 10, 5], high=[500, 200, 50], size=(400, 3))
+
+fig = plot_volumetric_density(params, labels=("mhalo", "rmfp", "nion"))
+fig.show()
+```
+
+### Comparing multiple campaigns with `visualise()`
+
+Pass 2–5 arrays to get back one figure per campaign. Each array can have a
+different shape — routing is automatic.
+
+```python
+import numpy as np
+from parascout import visualise
+
+rng = np.random.default_rng(0)
+
+uniform   = rng.uniform(low=[100, 10, 5], high=[500, 200, 50], size=(200, 3))
+clustered = rng.multivariate_normal([200, 50, 20], np.diag([2000, 400, 50]), size=200)
+
+figs = visualise([uniform, clustered], labels=("mhalo", "rmfp", "nion"))
+figs[0].update_layout(title="Uniform Sampling")
+figs[1].update_layout(title="Clustered Sampling")
+
+figs[0].show()
+figs[1].show()
+```
+
+A fully worked walkthrough of every API function, including higher-dimensional
+projections and real simulation data, is available in `demo_notebook.ipynb`.
 
 ---
 
