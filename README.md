@@ -1,5 +1,7 @@
 # ParaScout
 
+![parascout logo](ParaScout_logo.jpeg)
+
 ParaScout is a tool for evaluating and visualising how well a parameter space has been explored.
 
 Simulation campaigns often involve running models across a high-dimensional parameter space. As the number of parameters increases, it becomes difficult to determine which regions have been densely sampled, which regions remain unexplored, and where future simulations would provide the greatest benefit.
